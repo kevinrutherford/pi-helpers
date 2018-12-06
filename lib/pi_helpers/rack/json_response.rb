@@ -13,7 +13,7 @@ module Pi
 
       def call(env)
         status, body = @succ.call(env)
-        request = Rack::Request.new(env)
+        request = ::Rack::Request.new(env)
         content = body.merge({ self: request.fullpath })
         [status, {'Content-Type' => 'application/json'}, [content.to_json]]
       end

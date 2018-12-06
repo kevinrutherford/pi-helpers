@@ -18,7 +18,7 @@ module Pi
       end
 
       def call(env)
-        @request = Rack::Request.new(env)
+        @request = ::Rack::Request.new(env)
         with_claims(env) do |claims|
           env['pi.claims'] = claims
           @successor.call(env)

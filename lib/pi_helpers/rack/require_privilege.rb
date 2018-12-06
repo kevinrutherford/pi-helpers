@@ -17,7 +17,7 @@ module Pi
       end
 
       def call(env)
-        @request = Rack::Request.new(env)
+        @request = ::Rack::Request.new(env)
         claims = env['pi.claims']
         return error(509, "Incorrect Rack configuration") unless claims
         return error(403, "Privilege #{@priv} required") unless claims.has_key?('privileges')
@@ -29,7 +29,7 @@ module Pi
 
       def error(status_code, message)
         result = { error: message }
-        Rack::Response.new(result.to_json, status_code)
+        ::Rack::Response.new(result.to_json, status_code)
       end
 
     end
