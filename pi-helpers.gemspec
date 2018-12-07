@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name          = 'pi-helpers'
-  spec.version       = '0.0.4'
+  spec.version       = '0.0.5'
   spec.licenses      = ['MIT']
   spec.authors       = ['Kevin Rutherford']
   spec.email         = ['kevin@rutherford-software.com']
@@ -18,8 +18,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'json', '~> 2.1'
   spec.add_runtime_dependency 'jwt', '~> 2.1'
   spec.add_runtime_dependency 'rack', '~> 2.0'
-
-  spec.add_development_dependency 'rspec', '~> 3.7'
+  spec.add_runtime_dependency 'rspec', '~> 3.7'
 
 end
 
