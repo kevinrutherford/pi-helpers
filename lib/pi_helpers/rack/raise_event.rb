@@ -4,6 +4,7 @@
 #
 
 require 'es_http_client'
+require_relative './json_response'
 
 module Pi
   module Rack
@@ -19,7 +20,7 @@ module Pi
         resource = env['pi.resource']
         expected_version = @options[:version] || EsHttpClient::ExpectedVersion::Any
         if !resource.append(event, expected_version)
-          return [409, {errors: ["Conflict -- resource #{resource} in use"]}]
+          return Pi::Rack.respond(409, {errors: ["Conflict -- resource #{resource} in use"]})
         end
         @succ.call(env)
       end

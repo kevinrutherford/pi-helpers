@@ -5,6 +5,7 @@
 
 require 'json'
 require 'jwt'
+require_relative './json_response'
 
 module Pi
   module Rack
@@ -41,13 +42,8 @@ module Pi
         end
       end
 
-      def error(status_code, message)
-        result = { error: message }
-        [
-          status_code,
-          { 'Content-Type' => 'application/json' },
-          [result.to_json]
-        ]
+      def error(status, message)
+        Pi::Rack.respond(status, { error: message })
       end
 
     end
