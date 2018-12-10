@@ -6,18 +6,13 @@
 module Pi
   module Rack
 
-    class JsonResponse
-      def initialize(succ)
-        @succ = succ
-      end
-
-      def call(env)
-        status, body = @succ.call(env)
-        request = ::Rack::Request.new(env)
-        content = body.merge({ self: request.fullpath })
-        [status, {'Content-Type' => 'application/json'}, [content.to_json]]
-      end
+    def respond(status, body)
+      result = ::Rack::Response.new(body.to_json, status)
+      result.set_header('Content-Type', 'application/json')
+      result
     end
+
+    module_function :respond
 
   end
 end

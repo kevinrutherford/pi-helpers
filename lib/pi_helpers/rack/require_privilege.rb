@@ -5,14 +5,15 @@
 
 require 'rack'
 require 'json'
+require_relative './json_response'
 
 module Pi
   module Rack
 
     class RequirePrivilege
 
-      def initialize(successor, priv)
-        @successor = successor
+      def initialize(app, priv)
+        @app = app
         @priv = priv.to_s
       end
 
@@ -22,14 +23,14 @@ module Pi
         return error(509, "Incorrect Rack configuration") unless claims
         return error(403, "Privilege #{@priv} required") unless claims.has_key?('privileges')
         return error(403, "Privilege #{@priv} required") unless claims['privileges'].include?(@priv)
-        @successor.call(env)
+        @app.call(env)
       end
 
       private
 
-      def error(status_code, message)
+      def error(status, message)
         result = { error: message }
-        ::Rack::Response.new(result.to_json, status_code)
+        Pi::Rack.respond(status, result)
       end
 
     end
