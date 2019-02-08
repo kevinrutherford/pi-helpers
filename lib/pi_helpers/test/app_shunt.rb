@@ -7,7 +7,6 @@ module Pi
   module Test
 
     class AppShunt
-      include Random
 
       attr_reader :env_passed
 
@@ -27,8 +26,8 @@ module Pi
 
       def response
         @response ||= {
-          random_id => random_word,
-          random_id => random_word
+          Pi::Test::Random::random_id => Pi::Test::Random::random_word,
+          Pi::Test::Random::random_id => Pi::Test::Random::random_word
         }
       end
 
