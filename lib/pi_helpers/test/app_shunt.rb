@@ -26,8 +26,8 @@ module Pi
 
       def response
         @response ||= {
-          Pi::Test::Random::random_id => Pi::Test::Random::random_word,
-          Pi::Test::Random::random_id => Pi::Test::Random::random_word
+          Pi::Test::Random.random_id => Pi::Test::Random.random_word,
+          Pi::Test::Random.random_id => Pi::Test::Random.random_word
         }
       end
 

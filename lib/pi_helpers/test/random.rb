@@ -28,6 +28,8 @@ module Pi
         "#{random_word}@#{random_word}.com"
       end
 
+      module_function :random_int, :random_word, :random_id, :random_email_address
+
     end
   end
 end
