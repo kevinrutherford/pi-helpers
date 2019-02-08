@@ -7,7 +7,7 @@ module Pi
   module Test
 
     class AppShunt
-      include Pi::Test::Random
+      include Random
 
       attr_reader :env_passed
 
