@@ -3,13 +3,11 @@
 # Proprietary and confidential.
 #
 
-require_relative './random_helpers'
-
 module Pi
   module Test
 
     class AppShunt
-      include RandomHelpers
+      include Pi::Test::Random
 
       attr_reader :env_passed
 
