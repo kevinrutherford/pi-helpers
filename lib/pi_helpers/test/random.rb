@@ -9,7 +9,7 @@ require 'securerandom'
 module Pi
   module Test
 
-    module RandomHelpers
+    module Random
 
       def random_int
         Random.rand(1000) + 1
