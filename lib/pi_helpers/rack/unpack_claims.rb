@@ -12,8 +12,8 @@ module Pi
 
     class UnpackClaims
 
-      def initialize(successor, key_file)
-        @successor = successor
+      def initialize(app, key_file)
+        @app = app
         @verify_key = ""
         File.open(key_file) {|f| @verify_key = OpenSSL::PKey.read(f) }
       end
@@ -22,7 +22,7 @@ module Pi
         @request = ::Rack::Request.new(env)
         with_claims(env) do |claims|
           env['pi.claims'] = claims
-          @successor.call(env)
+          @app.call(env)
         end
       end
 
