@@ -5,6 +5,7 @@
 
 require 'rack'
 require_relative 'rack/connect_to_eventstore'
+require_relative 'rack/no_content'
 require_relative 'rack/raise_event'
 require_relative 'rack/readmodel_ready'
 require_relative 'rack/require_privilege'
