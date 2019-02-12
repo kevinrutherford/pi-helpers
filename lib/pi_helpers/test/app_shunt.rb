@@ -3,6 +3,8 @@
 # Proprietary and confidential.
 #
 
+require_relative './random'
+
 module Pi
   module Test
 
@@ -21,7 +23,7 @@ module Pi
       def call(env)
         @called = true
         @env_passed = env
-        return response
+        return Pi::Rack.respond(200, response)
       end
 
       def response

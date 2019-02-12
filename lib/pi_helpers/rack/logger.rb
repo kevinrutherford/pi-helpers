@@ -19,7 +19,7 @@ module Pi
 
       def call(env)
         env['pi.logger'] = @writer
-        req = Rack::Request.new(env)
+        req = ::Rack::Request.new(env)
         status, headers, body = @app.call(env)
         @writer.call({
           level:  'info',
@@ -27,7 +27,7 @@ module Pi
           msg:    "#{env['REQUEST_METHOD']} #{req.fullpath}",
           status: status
         })
-        [status, headers, body]
+        Pi::Rack.respond(status, body)
       rescue Exception => ex
         @writer.call({
           level: 'error',

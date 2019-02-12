@@ -3,6 +3,8 @@
 # Proprietary and confidential.
 #
 
+require 'json'
+
 module Pi
   module Rack
 

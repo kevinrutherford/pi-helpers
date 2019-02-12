@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name          = 'pi-helpers'
-  spec.version       = '0.0.12'
+  spec.version       = '0.0.13'
   spec.licenses      = ['MIT']
   spec.authors       = ['Kevin Rutherford']
   spec.email         = ['kevin@rutherford-software.com']
