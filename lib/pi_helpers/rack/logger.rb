@@ -3,7 +3,8 @@
 # Proprietary and confidential.
 #
 
-require 'rack/request'
+require 'rack'
+require_relative './json_response'
 require_relative './log_writer'
 
 module Pi
