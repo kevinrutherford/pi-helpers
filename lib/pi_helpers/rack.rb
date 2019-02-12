@@ -1,10 +1,11 @@
-# Copyright (C) 2018 Piford Software Limited - All Rights Reserved.
+# Copyright (C) 2019 Piford Software Limited - All Rights Reserved.
 # Unauthorized copying of this file, via any medium is strictly prohibited.
 # Proprietary and confidential.
 #
 
 require 'rack'
 require_relative 'rack/connect_to_eventstore'
+require_relative 'rack/logger'
 require_relative 'rack/no_content'
 require_relative 'rack/raise_event'
 require_relative 'rack/readmodel_ready'
