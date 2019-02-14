@@ -10,6 +10,7 @@ require_relative 'rack/no_content'
 require_relative 'rack/raise_event'
 require_relative 'rack/readmodel_ready'
 require_relative 'rack/require_privilege'
+require_relative 'rack/subscriber'
 require_relative 'rack/strip_params'
 require_relative 'rack/unpack_claims'
 
