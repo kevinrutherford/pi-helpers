@@ -20,14 +20,26 @@ module Pi
       def call(env)
         env['pi.logger'] = @writer
         req = ::Rack::Request.new(env)
-        res = @app.call(env)
+        response = @app.call(env)
+        case response
+        when Array
+          @writer.call({
+            level:  'warning',
+            tag:    'aray.response',
+            msg:    "Array returned instead of Rack::Response",
+            response: response.inspect
+          })
+          status = response[0]
+        else
+          status = response.status
+        end
         @writer.call({
           level:  'info',
           tag:    'http.request',
           msg:    "#{env['REQUEST_METHOD']} #{req.fullpath}",
-          status: res.status
+          status: status
         })
-        res
+        response
       rescue Exception => ex
         @writer.call({
           level: 'error',
