@@ -1,4 +1,4 @@
-# Copyright (C) 2018 Piford Software Limited - All Rights Reserved.
+# Copyright (C) 2019 Piford Software Limited - All Rights Reserved.
 # Unauthorized copying of this file, via any medium is strictly prohibited.
 # Proprietary and confidential.
 #
@@ -10,8 +10,8 @@ module Pi
 
     class ConnectToEventstore
 
-      def initialize(successor, options)
-        @successor = successor
+      def initialize(app, options)
+        @app = app
         @url = options[:url]
         @username = options[:username]
         @password =  options[:password]
@@ -19,7 +19,7 @@ module Pi
 
       def call(env)
         env['pi.eventstore'] ||= EsHttpClient.connect(@url, @username, @password)
-        @successor.call(env)
+        @app.call(env)
       end
 
     end

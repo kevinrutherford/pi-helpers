@@ -59,6 +59,7 @@ module Pi
 
       def busy_response
         Pi::Rack.respond(503, {
+          meta: { origin: self.class.name },
           errors: [
             {
               status: '503',

@@ -22,16 +22,24 @@ module Pi
         req = ::Rack::Request.new(env)
         response = @app.call(env)
         case response
+        when ::Rack::Response
+          status = response.status
         when Array
           @writer.call({
             level:  'warning',
-            tag:    'aray.response',
+            tag:    'array.response',
             msg:    "Array returned instead of Rack::Response",
             response: response.inspect
           })
           status = response[0]
         else
-          status = response.status
+          @writer.call({
+            level:  'warning',
+            tag:    'unknown.response',
+            msg:    "#{response.class.name} returned instead of Rack::Response",
+            response: response.inspect
+          })
+          status = 'unknown'
         end
         @writer.call({
           level:  'info',
@@ -50,6 +58,7 @@ module Pi
           request: "#{env['REQUEST_METHOD']} #{req.fullpath}",
         })
         Pi::Rack.respond(500, {
+          meta: { origin: self.class.name },
           errors: [
             {
               status: '500',

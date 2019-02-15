@@ -15,6 +15,7 @@ module Pi
 
       def call(env)
         return Pi::Rack.respond(503, {
+          meta: { origin: self.class.name },
           errors: [
             {
               status: '503',
