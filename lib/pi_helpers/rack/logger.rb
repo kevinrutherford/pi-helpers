@@ -12,40 +12,20 @@ module Pi
 
     class Logger
 
-      def initialize(app)
+      def initialize(app, options = {})
         @app = app
-        @writer = Pi::Util::LogWriter.new
+        @writer = options[:writer] || Pi::Util::LogWriter.new
       end
 
       def call(env)
         env['pi.logger'] = @writer
         req = ::Rack::Request.new(env)
         response = @app.call(env)
-        case response
-        when ::Rack::Response
-          status = response.status
-        when Array
-          @writer.call({
-            level:  'warning',
-            tag:    'array.response',
-            msg:    "Array returned instead of Rack::Response",
-            response: response.inspect
-          })
-          status = response[0]
-        else
-          @writer.call({
-            level:  'warning',
-            tag:    'unknown.response',
-            msg:    "#{response.class.name} returned instead of Rack::Response",
-            response: response.inspect
-          })
-          status = 'unknown'
-        end
         @writer.call({
           level:  'info',
           tag:    'http.request',
           msg:    "#{env['REQUEST_METHOD']} #{req.fullpath}",
-          status: status
+          status: response.to_a[0]
         })
         response
       rescue Exception => ex

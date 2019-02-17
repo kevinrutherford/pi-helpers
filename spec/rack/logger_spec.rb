@@ -7,7 +7,9 @@ require 'pi_helpers/rack/logger'
 require 'pi_helpers/test/app_shunt'
 
 RSpec.describe Pi::Rack::Logger do
-  subject { Pi::Rack::Logger.new(app) }
+  let(:out) { StringIO.new }
+  let(:writer) { Pi::Util::LogWriter.new(out) }
+  subject { Pi::Rack::Logger.new(app, writer: writer) }
   let(:env) { { } }
   let(:response) { subject.call(env) }
 
@@ -21,6 +23,11 @@ RSpec.describe Pi::Rack::Logger do
     specify 'the app is called' do
       response
       expect(app).to be_called
+    end
+
+    specify 'the response is logged' do
+      response
+      expect(out.string).to match(/status="200"/)
     end
 
   end
