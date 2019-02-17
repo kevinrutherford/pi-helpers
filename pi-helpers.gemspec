@@ -23,5 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'rspec', '~> 3.7'
   spec.add_runtime_dependency 'uuidtools', '~> 2'
 
+  spec.add_development_dependency 'simplecov'
+
 end
 

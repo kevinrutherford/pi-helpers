@@ -1,0 +1,9 @@
+coverage/
+env
+.env
+.mk-*
+*.pem
+.rspec
+tags
+tmp/
+
