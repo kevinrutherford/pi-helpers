@@ -5,7 +5,7 @@
 
 require 'rack'
 require_relative './json_response'
-require_relative './log_writer'
+require_relative '../util/log_writer'
 
 module Pi
   module Rack
@@ -14,7 +14,7 @@ module Pi
 
       def initialize(app)
         @app = app
-        @writer = LogWriter.new
+        @writer = Pi::Util::LogWriter.new
       end
 
       def call(env)

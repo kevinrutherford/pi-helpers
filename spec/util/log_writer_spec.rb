@@ -3,9 +3,9 @@
 # Proprietary and confidential.
 #
 
-require 'pi_helpers/rack/log_writer'
+require 'pi_helpers/util/log_writer'
 
-RSpec.describe Pi::Rack::LogWriter do
+RSpec.describe Pi::Util::LogWriter do
 
 end
 

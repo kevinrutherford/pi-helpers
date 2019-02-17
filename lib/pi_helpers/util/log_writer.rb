@@ -4,24 +4,25 @@
 #
 
 module Pi
-  module Rack
+  module Util
 
     class LogWriter
 
-      def call(ctx)
-        ctx = {
+      def initialize(out = STDERR)
+        @out = out
+      end
+
+      def call(evt)
+        evt = {
           time: Time.now
-        }.merge(ctx)
-        extras = ENV.select {|k,v| k =~ /^readmodel/i }
-        ctx = ctx.merge(extras)
-        STDERR.puts ctx.map {|k,v| format(k, v.to_s) }.join(' ')
+        }.merge(evt)
+        @out.puts evt.map {|k,v| format(k, v.to_s) }.join(' ')
       end
 
       private
 
       def format(k, v)
-        value = (v =~ / /) ? "\"#{v}\"" : v
-        "#{k}=#{value}"
+        "#{k}=\"#{v}\""
       end
 
     end
