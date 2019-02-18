@@ -3,11 +3,9 @@
 # Proprietary and confidential.
 #
 
-require_relative 'util/log_writer'
-require_relative 'util/subscriber'
+require 'pi_helpers/util/subscriber'
 
-module Pi
-  module Util
-  end
+RSpec.describe Pi::Util::Subscriber do
+
 end
 
