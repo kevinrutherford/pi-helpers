@@ -3,12 +3,10 @@
 # Proprietary and confidential.
 #
 
-require_relative 'test/app_shunt'
-require_relative 'test/event_matchers'
-require_relative 'test/random'
+require_relative 'util/log_writer'
 
 module Pi
-  module Test
+  module Util
   end
 end
 
