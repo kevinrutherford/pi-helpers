@@ -24,7 +24,7 @@ module Pi
               title: 'Read model not ready'
             }
           ]
-        }) unless env[ENV_READMODEL].status[:available]
+        }) unless env[ENV_READMODEL][:available]
         @app.call(env)
       end
 
