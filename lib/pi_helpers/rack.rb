@@ -4,6 +4,7 @@
 #
 
 require 'rack'
+require_relative 'rack/configuration_error'
 require_relative 'rack/connect_to_eventstore'
 require_relative 'rack/logger'
 require_relative 'rack/no_content'
@@ -16,6 +17,7 @@ require_relative 'rack/unpack_claims'
 
 module Pi
   module Rack
+    ENV_READMODEL = 'pi.readmodel'
   end
 end
 

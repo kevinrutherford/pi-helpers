@@ -18,7 +18,7 @@ module Pi
       end
 
       def call(env)
-        env['pi.readmodel'] = @subscriber.status
+        env[ENV_READMODEL] = @subscriber.status
         @app.call(env)
       end
 
