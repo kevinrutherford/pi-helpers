@@ -19,16 +19,14 @@ module Pi
       end
 
       def start
-        Thread.new do
-          wait_for(@upstream) if @upstream
-          @listener.call({
-            level: 'info',
-            tag: 'subscriber.start',
-            msg: 'Starting EventStore subscriber'
-          })
-          @waiting = false
-          @subscriber.subscribe
-        end
+        wait_for(@upstream) if @upstream
+        @listener.call({
+          level: 'info',
+          tag: 'subscriber.start',
+          msg: 'Starting EventStore subscriber'
+        })
+        @waiting = false
+        @subscriber.subscribe
       end
 
       def status

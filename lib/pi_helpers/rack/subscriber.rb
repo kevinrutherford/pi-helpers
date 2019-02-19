@@ -14,7 +14,7 @@ module Pi
       def initialize(app, options)
         @app = app
         @subscriber = Pi::Util::Subscriber.new(options)
-        @subscriber.start
+        Thread.new { @subscriber.start }
       end
 
       def call(env)
