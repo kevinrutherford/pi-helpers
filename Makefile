@@ -6,10 +6,16 @@
 GEMS    := Gemfile.lock
 SOURCES := $(shell find . -name '*.r?')
 MK_TESTED := .mk-tested
+MK_PUBLISHED := .mk-published
 
-.PHONY: clean clobber spec
+.PHONY: clean clobber spec publish
 
 spec: $(MK_TESTED)
+
+publish: $(MK_PUBLISHED)
+
+$(MK_PUBLISHED): spec
+	@touch $@
 
 $(MK_TESTED): $(GEMS) $(SOURCES)
 	@bundle exec rspec
@@ -19,7 +25,7 @@ $(GEMS): Gemfile
 	bundle install
 
 clean:
-	$(RM) $(MK_TESTED)
+	$(RM) $(MK_TESTED) $(MK_PUBLISHED)
 
 clobber: clean
 	$(RM) $(GEMS)
