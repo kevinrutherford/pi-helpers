@@ -5,6 +5,7 @@
 
 require 'rack'
 require 'json'
+require_relative './configuration_error'
 require_relative './json_response'
 
 module Pi
@@ -19,8 +20,8 @@ module Pi
 
       def call(env)
         @request = ::Rack::Request.new(env)
-        claims = env['pi.claims']
-        return error(509, "Incorrect Rack configuration") unless claims
+        claims = env[CLAIMS_KEY]
+        raise ConfigurationError, "Environment must contain unpacked claims" unless claims
         return error(403, "Privilege #{@priv} required") unless claims.has_key?('privileges')
         return error(403, "Privilege #{@priv} required") unless claims['privileges'].include?(@priv)
         @app.call(env)

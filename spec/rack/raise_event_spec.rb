@@ -14,8 +14,8 @@ RSpec.describe Pi::Rack::RaiseEvent do
   context 'when the event would cause a resource conflict' do
     let(:env) {
       {
-        'pi.resource' => resource,
-        'pi.event_data' => {}
+        Pi::Rack::RESOURCE_KEY => resource,
+        Pi::Rack::EVENT_DATA_KEY => {}
       }
     }
 
@@ -32,6 +32,32 @@ RSpec.describe Pi::Rack::RaiseEvent do
       expect(app).to_not have_received(:call)
     end
 
+  end
+
+  context 'when there is no event data' do
+    let(:env) {
+      {
+        Pi::Rack::RESOURCE_KEY => resource
+      }
+    }
+
+    specify 'an error is thrown' do
+      expect{ subject.call(env) }.to raise_error(Pi::Rack::ConfigurationError)
+      expect(app).to_not have_received(:call)
+    end
+  end
+
+  context 'when there is no resource' do
+    let(:env) {
+      {
+        Pi::Rack::EVENT_DATA_KEY => {}
+      }
+    }
+
+    specify 'an error is thrown' do
+      expect{ subject.call(env) }.to raise_error(Pi::Rack::ConfigurationError)
+      expect(app).to_not have_received(:call)
+    end
   end
 
 end

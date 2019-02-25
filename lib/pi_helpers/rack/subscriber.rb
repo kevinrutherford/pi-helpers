@@ -4,10 +4,11 @@
 #
 
 require_relative '../util/subscriber'
-require_relative './json_response'
 
 module Pi
   module Rack
+
+    READMODEL_KEY = 'pi.readmodel'
 
     class Subscriber
 
@@ -18,7 +19,7 @@ module Pi
       end
 
       def call(env)
-        env[ENV_READMODEL] = @subscriber.status
+        env[READMODEL_KEY] = @subscriber.status
         @app.call(env)
       end
 

@@ -3,13 +3,13 @@
 # Proprietary and confidential.
 #
 
-require 'pi_helpers/rack/logger'
+require 'pi_helpers/rack/request_logger'
 require 'pi_helpers/test/app_shunt'
 
-RSpec.describe Pi::Rack::Logger do
+RSpec.describe Pi::Rack::RequestLogger do
   let(:out) { StringIO.new }
   let(:writer) { Pi::Util::LogWriter.new(out) }
-  subject { Pi::Rack::Logger.new(app, writer: writer) }
+  subject { Pi::Rack::RequestLogger.new(app, writer: writer) }
   let(:env) { { } }
   let(:response) { subject.call(env) }
 

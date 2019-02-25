@@ -10,6 +10,8 @@ require_relative './json_response'
 module Pi
   module Rack
 
+    CLAIMS_KEY = 'pi.claims'
+
     class UnpackClaims
 
       def initialize(app, key_file)
@@ -21,7 +23,7 @@ module Pi
       def call(env)
         @request = ::Rack::Request.new(env)
         with_claims(env) do |claims|
-          env['pi.claims'] = claims
+          env[CLAIMS_KEY] = claims
           @app.call(env)
         end
       end

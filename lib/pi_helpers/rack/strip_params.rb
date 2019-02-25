@@ -6,16 +6,19 @@
 module Pi
   module Rack
 
+    PARAMS_KEY = 'pi.params'
+
     class StripParams
-      def initialize(succ)
-        @succ = succ
+      def initialize(app)
+        @app = app
       end
 
       def call(env)
-        if env.has_key?('router.params')
-          env['pi.params'] = env['router.params'].transform_values {|v| xform(v) }
-        end
-        @succ.call(env)
+        router_params_key = 'router.params'
+        router_params = env[router_params_key]
+        raise ConfigurationError, "Environment must include #{router_params_key}" unless router_params
+        env[PARAMS_KEY] = router_params.transform_values {|v| xform(v) }
+        @app.call(env)
       end
 
       private

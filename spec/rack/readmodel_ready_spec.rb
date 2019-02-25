@@ -12,7 +12,7 @@ RSpec.describe Pi::Rack::ReadmodelReady do
   context 'when the readmodel is ready' do
     let(:env) {
       {
-        Pi::Rack::ENV_READMODEL => { available: true }
+        Pi::Rack::READMODEL_KEY => { available: true }
       }
     }
 
@@ -33,7 +33,7 @@ RSpec.describe Pi::Rack::ReadmodelReady do
   context 'when the readmodel is not ready' do
     let(:env) {
       {
-        Pi::Rack::ENV_READMODEL => { available: false }
+        Pi::Rack::READMODEL_KEY => { available: false }
       }
     }
 

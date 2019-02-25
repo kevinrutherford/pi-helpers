@@ -15,7 +15,7 @@ module Pi
       end
 
       def call(env)
-        raise ConfigurationError, 'Readmodel not found in Rack middleware' unless env.has_key?(ENV_READMODEL)
+        raise ConfigurationError, "Environment must contain #{READMODEL_KEY}" unless env.has_key?(READMODEL_KEY)
         return Pi::Rack.respond(503, {
           meta: { origin: self.class.name },
           errors: [
@@ -24,7 +24,7 @@ module Pi
               title: 'Read model not ready'
             }
           ]
-        }) unless env[ENV_READMODEL][:available]
+        }) unless env[READMODEL_KEY][:available]
         @app.call(env)
       end
 

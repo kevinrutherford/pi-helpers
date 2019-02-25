@@ -8,6 +8,8 @@ require 'es_http_client'
 module Pi
   module Rack
 
+    EVENTSTORE_KEY = 'pi.eventstore'
+
     class ConnectToEventstore
 
       def initialize(app, options)
@@ -18,7 +20,7 @@ module Pi
       end
 
       def call(env)
-        env['pi.eventstore'] ||= EsHttpClient.connect(@url, @username, @password)
+        env[EVENTSTORE_KEY] ||= EsHttpClient.connect(@url, @username, @password)
         @app.call(env)
       end
 

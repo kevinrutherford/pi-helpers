@@ -14,12 +14,8 @@ RSpec.describe Pi::Rack::RequirePrivilege do
   context 'when the claims have not been unpacked' do
     let(:env) { { } }
 
-    specify 'a 509 response is returned' do
-      expect(response.status).to eq(509)
-    end
-
-    specify 'the app is not called' do
-      response
+    specify 'an error is thrown' do
+      expect { subject.call(env) }.to raise_error(Pi::Rack::ConfigurationError)
       expect(app).to_not have_received(:call)
     end
 

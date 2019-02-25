@@ -26,6 +26,7 @@ $(GEMS): Gemfile
 
 clean:
 	$(RM) $(MK_TESTED) $(MK_PUBLISHED)
+	$(RM) -r coverage/
 
 clobber: clean
 	$(RM) $(GEMS)

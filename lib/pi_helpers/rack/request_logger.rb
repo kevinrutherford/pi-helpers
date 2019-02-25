@@ -10,7 +10,9 @@ require_relative '../util/log_writer'
 module Pi
   module Rack
 
-    class Logger
+    LOGWRITER_KEY = 'pi.logger'
+
+    class RequestLogger
 
       def initialize(app, options = {})
         @app = app
@@ -18,7 +20,7 @@ module Pi
       end
 
       def call(env)
-        env['pi.logger'] = @writer
+        env[LOGWRITER_KEY] = @writer
         req = ::Rack::Request.new(env)
         response = @app.call(env)
         @writer.call({
