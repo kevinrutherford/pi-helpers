@@ -73,6 +73,7 @@ module Pi
 
       def fetch(host, path)
         connection = Faraday.new(url: host) do |faraday|
+          faraday.request :retry, max: 4, interval: 0.05, interval_randomness: 0.5, backoff_factor: 2
           faraday.adapter Faraday.default_adapter
         end
         response = connection.send(:get, path) do |req|
