@@ -33,6 +33,7 @@ module Pi
         {
           available:      !@waiting && available,
           state:          @subscriber.state,
+          subscriber:     @subscriber.status,
           status_message: status_message
         }
       end
@@ -50,6 +51,13 @@ module Pi
 
       def wait_for(upstream)
         host = upstream[:host]
+        @listener.call({
+          level: 'info',
+          tag: 'waitfor.upstream',
+          msg: "About to begin polling #{host}",
+          upstream: host,
+          subscriber: @subscriber.status
+        })
         while true do
           sleep 5
           status = fetch(host, upstream[:path])
