@@ -16,5 +16,49 @@ RSpec.describe Pi::Rack::StripParams do
     end
   end
 
+  context 'when a param has space padding' do
+    let(:env) {
+      {
+        'ignore_me' => '  padded ',
+        'ignore_me_too' => 34,
+        'router.params' => {
+          p1: 34,
+          p2: ' pad ',
+          p3: [5, ' pad ', 7]
+        }
+      }
+    }
+
+    specify 'the padding is stripped' do
+      subject.call(env)
+      expect(app.env_passed['ignore_me']).to eq('  padded ')
+      expect(app.env_passed[Pi::Rack::PARAMS_KEY]).to eq({
+          p1: 34,
+          p2: 'pad',
+          p3: [5, ' pad ', 7]
+      })
+    end
+  end
+
+  context 'when there is a query string' do
+    let(:env) {
+      {
+        'QUERY_STRING' => 'filter[nuttshell]=34&order=desc',
+        'router.params' => {
+          p2: ' pad ',
+        }
+      }
+    }
+
+    specify 'it is added to the params' do
+      subject.call(env)
+      expect(app.env_passed[Pi::Rack::PARAMS_KEY]).to eq({
+          p2: 'pad',
+          filter: { 'nuttshell' => '34' },
+          order: 'desc'
+      })
+    end
+  end
+
 end
 

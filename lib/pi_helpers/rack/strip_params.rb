@@ -3,6 +3,8 @@
 # Proprietary and confidential.
 #
 
+require 'rack'
+
 module Pi
   module Rack
 
@@ -17,15 +19,25 @@ module Pi
         router_params_key = 'router.params'
         router_params = env[router_params_key]
         raise ConfigurationError, "Environment must include #{router_params_key}" unless router_params
-        env[PARAMS_KEY] = router_params.transform_values {|v| xform(v) }
+        query_string = ::Rack::Request.new(env).GET
+        env[PARAMS_KEY] = strip_values(router_params).merge(symbolize_keys(query_string))
         @app.call(env)
       end
 
       private
 
-      def xform(v)
+      def strip_values(h)
+        h.transform_values {|v| strip(v) }
+      end
+
+      def strip(v)
         String === v ? v.strip : v
       end
+
+      def symbolize_keys(h)
+        h.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
+      end
+
     end
 
   end
