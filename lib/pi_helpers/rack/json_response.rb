@@ -3,13 +3,20 @@
 # Proprietary and confidential.
 #
 
+require 'rack'
 require 'json'
+require_relative './configuration_error'
 
 module Pi
   module Rack
 
     def respond(status, body)
-      content = body.nil? ? [] : body.to_json
+      if body.nil?
+        content = []
+      else
+        raise ConfigurationError,'Response body must be a Hash' unless Hash === body
+        content = body.to_json
+      end
       result = ::Rack::Response.new(content, status)
       result.set_header('Content-Type', 'application/json')
       result

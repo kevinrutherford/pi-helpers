@@ -3,6 +3,8 @@
 # Proprietary and confidential.
 #
 
+require_relative './json_response'
+
 module Pi
   module Rack
 

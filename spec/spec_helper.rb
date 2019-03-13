@@ -7,6 +7,7 @@ require 'simplecov'
 SimpleCov.start
 
 Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f }
+require_relative '../lib/pi_helpers/test/random'
 
 RSpec.configure do |config|
 
@@ -16,6 +17,8 @@ RSpec.configure do |config|
 
   config.order = :random
   Kernel.srand config.seed
+
+  config.include Pi::Test::Random
 
   config.mock_with :rspec do |mocks|
     mocks.verify_doubled_constant_names = true
