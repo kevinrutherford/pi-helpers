@@ -12,7 +12,7 @@ module Pi
     module Random
 
       def random_int
-        Random.rand(1000) + 1
+        ::Random.rand(1000) + 1
       end
 
       def random_word(pattern = '%')
