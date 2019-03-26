@@ -3,7 +3,7 @@
 # Proprietary and confidential.
 #
 
-require_relative '../util/subscriber'
+require_relative '../util/dependent_subscriber'
 require_relative '../rack/json_response'
 
 module Pi
@@ -15,25 +15,26 @@ module Pi
 
       def initialize(app, options)
         @app = app
-        @subscriber = options[:subscriber] || Pi::Util::Subscriber.new(options)
+        @subscriber = options[:subscriber] || Pi::Util::DependentSubscriber.new(options)
+        raise 'Subscriber must respond to :info' unless @subscriber.respond_to(:info)
+        raise 'Subscriber must respond to :start' unless @subscriber.respond_to(:start)
         Thread.new { @subscriber.start }
       end
 
       def call(env)
-        status = @subscriber.status
-        code = status[:subscriber]
+        info = @subscriber.info
+        code = info[:status]
         if code != 200
           return Pi::Rack.respond(code, {
             errors: [
               {
                 status: code.to_s,
-                title: 'Eventstore subscriber status',
-                detail: status.inspect
+                title: 'Eventstore subscriber not available'
               }
             ]
           })
         end
-        env[READMODEL_KEY] = status
+        env[READMODEL_KEY] = info
         @app.call(env)
       end
 

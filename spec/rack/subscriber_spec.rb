@@ -23,7 +23,8 @@ RSpec.describe Pi::Rack::Subscriber do
   }
 
   before do
-    expect(piggy).to receive(:status).and_return({ subscriber: subscriber_status })
+    allow(piggy).to receive(:respond_to).and_return(true)
+    expect(piggy).to receive(:info).and_return({ status: subscriber_status })
     @response = subject.call(env)
   end
 

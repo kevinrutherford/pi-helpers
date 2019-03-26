@@ -9,12 +9,13 @@ require_relative '../eventstore'
 module Pi
   module Util
 
-    class Subscriber
+    class DependentSubscriber
 
       def initialize(options)
         @listener = options[:listener]
+        raise "options[:listener] is required" unless @listener
         @upstream = options[:upstream]
-        @subscriber = Pi::Eventstore::Subscriber.new(options)
+        @subscriber = options[:subscriber] || Pi::Eventstore::Subscriber.new(options)
         @waiting = true
       end
 
@@ -29,12 +30,10 @@ module Pi
         @subscriber.subscribe
       end
 
-      def status
+      def info
         {
-          available:      !@waiting && available,
-          state:          @subscriber.state,
-          subscriber:     @subscriber.status,
-          status_message: status_message
+          status: @waiting ? 503 : @subscriber.status,                 # must be an integer HTTP status code
+          state: @subscriber.state
         }
       end
 
@@ -42,11 +41,6 @@ module Pi
 
       def available
         @subscriber.status[:available]
-      end
-
-      def status_message
-        return "Waiting for upstream service #{@upstream[:host]} to start" if @waiting
-        available ? 'OK' : 'Catching up with recent events'
       end
 
       def wait_for(upstream)
