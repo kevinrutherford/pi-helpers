@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name          = 'pi-helpers'
-  spec.version       = '0.2.4'
+  spec.version       = '0.3.0'
   spec.licenses      = ['MIT']
   spec.authors       = ['Kevin Rutherford']
   spec.email         = ['kevin@rutherford-software.com']
@@ -15,7 +15,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_runtime_dependency 'es-http-client', '~> 0.2'
-  spec.add_runtime_dependency 'es-readmodel', '~> 1'
   spec.add_runtime_dependency 'faraday', '~> 0.15'
   spec.add_runtime_dependency 'json', '~> 2.1'
   spec.add_runtime_dependency 'jwt', '~> 2.1'

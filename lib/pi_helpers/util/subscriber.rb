@@ -1,10 +1,10 @@
-# Copyright (C) 2019 Piford Software Limited - All Rights Reserved.
+# Copyright (c) Piford Software Limited - All Rights Reserved.
 # Unauthorized copying of this file, via any medium is strictly prohibited.
 # Proprietary and confidential.
 #
 
 require 'faraday'
-require 'es_readmodel/subscriber'
+require_relative '../eventstore'
 
 module Pi
   module Util
@@ -14,7 +14,7 @@ module Pi
       def initialize(options)
         @listener = options[:listener]
         @upstream = options[:upstream]
-        @subscriber = EsReadModel::Subscriber.new(options)
+        @subscriber = Pi::Eventstore::Subscriber.new(options)
         @waiting = true
       end
 
