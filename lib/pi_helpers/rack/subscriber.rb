@@ -4,6 +4,7 @@
 #
 
 require_relative '../util/subscriber'
+require_relative '../rack/json_response'
 
 module Pi
   module Rack
@@ -14,12 +15,25 @@ module Pi
 
       def initialize(app, options)
         @app = app
-        @subscriber = Pi::Util::Subscriber.new(options)
+        @subscriber = options[:subscriber] || Pi::Util::Subscriber.new(options)
         Thread.new { @subscriber.start }
       end
 
       def call(env)
-        env[READMODEL_KEY] = @subscriber.status
+        status = @subscriber.status
+        code = status[:subscriber]
+        if code != 200
+          return Pi::Rack.respond(code, {
+            errors: [
+              {
+                status: code.to_s,
+                title: 'Eventstore subscriber status',
+                detail: status.inspect
+              }
+            ]
+          })
+        end
+        env[READMODEL_KEY] = status
         @app.call(env)
       end
 
