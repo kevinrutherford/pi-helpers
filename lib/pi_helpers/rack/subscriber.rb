@@ -16,8 +16,8 @@ module Pi
       def initialize(app, options)
         @app = app
         @subscriber = options[:subscriber] || Pi::Util::DependentSubscriber.new(options)
-        raise 'Subscriber must respond to :info' unless @subscriber.respond_to(:info)
-        raise 'Subscriber must respond to :start' unless @subscriber.respond_to(:start)
+        raise 'Subscriber must respond to :info' unless @subscriber.respond_to?(:info)
+        raise 'Subscriber must respond to :start' unless @subscriber.respond_to?(:start)
         Thread.new { @subscriber.start }
       end
 

@@ -7,7 +7,7 @@ require 'pi_helpers/rack/subscriber'
 
 RSpec.describe Pi::Rack::Subscriber do
   let(:app) { Pi::Test::AppShunt.new }
-  let(:piggy) { double('Piggy-back subscriber') }
+  let(:piggy) { double('Piggy-back subscriber', start: true) }
   subject { Pi::Rack::Subscriber.new(app, options) }
   let(:options) {
     {
@@ -23,7 +23,6 @@ RSpec.describe Pi::Rack::Subscriber do
   }
 
   before do
-    allow(piggy).to receive(:respond_to).and_return(true)
     expect(piggy).to receive(:info).and_return({ status_code: subscriber_status })
     @response = subject.call(env)
   end
