@@ -10,7 +10,12 @@ RSpec.describe Pi::Util::DependentSubscriber do
   let(:options) {
     {
       eventstore: piggy,
-      upstream: {},
+      upstream: {
+        host: random_word,
+        path: random_word,
+        grace_period: random_int,
+        interval: random_int
+      },
       listener: double
     }
   }

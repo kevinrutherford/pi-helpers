@@ -12,8 +12,14 @@ module Pi
 
       def initialize(options)
         @listener = options[:listener]
-        raise "options[:listener] is required" unless @listener
+        raise 'options[:listener] is required' unless @listener
         @upstream = options[:upstream]
+        if @upstream
+          raise 'upstream[:host] is required' unless @upstream[:host]
+          raise 'upstream[:path] is required' unless @upstream[:path]
+          raise 'upstream[:grace_period] is required' unless @upstream[:grace_period]
+          raise 'upstream[:interval] is required' unless @upstream[:interval]
+        end
         @subscriber = options[:eventstore] || Pi::Eventstore::Subscriber.new(@info, options[:eventstore], @listener)
         @info = {
           status_code: 200,
@@ -43,18 +49,18 @@ module Pi
       def wait_for(upstream)
         @info[:status_code] = 503
         @info[:message] = "Waiting for upstream #{@upstream[:host]} service"
-        sleep @options[:upstream][:grace_period]
-        upstream = Upstream.new(@options[:upstream], @info)
+        sleep @upstream[:grace_period]
+        upstream = Upstream.new(@upstream, @info)
         loop do
           @info.merge! upstream.check
           log_upstream_status
           return unless @info[:status_code] == 503
-          sleep @options[:upstream][:interval]
+          sleep @upstream[:interval]
         end
       end
 
       def log_upstream_status
-        host = @options[:upstream][:host]
+        host = @upstream[:host]
         code = @info[:status_code]
         msg = @info[:message]
         @listener.call({
