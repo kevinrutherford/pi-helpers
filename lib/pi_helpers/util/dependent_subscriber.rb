@@ -4,6 +4,7 @@
 #
 
 require_relative '../eventstore'
+require_relative './upstream'
 
 module Pi
   module Util
@@ -20,16 +21,17 @@ module Pi
           raise 'upstream[:grace_period] is required' unless @upstream[:grace_period]
           raise 'upstream[:interval] is required' unless @upstream[:interval]
         end
-        @subscriber = options[:eventstore] || Pi::Eventstore::Subscriber.new(@info, options[:eventstore], @listener)
         @info = {
           status_code: 200,
           message: 'OK',
           state: nil,
           stats: {}
         }
+        @subscriber = options[:test_subscriber] || Pi::Eventstore::Subscriber.new(@info, options[:eventstore], @listener)
       end
 
       def start
+        @listener.call(starting_service)
         wait_for(@upstream) if @upstream
         if @info[:status_code] == 200
           @listener.call(starting_subscriber)
@@ -50,7 +52,7 @@ module Pi
         @info[:status_code] = 503
         @info[:message] = "Waiting for upstream #{@upstream[:host]} service"
         sleep @upstream[:grace_period]
-        upstream = Upstream.new(@upstream, @info)
+        upstream = Upstream.new(@upstream[:host], @upstream[:path])
         loop do
           @info.merge! upstream.check
           log_upstream_status
@@ -70,6 +72,14 @@ module Pi
           upstream: host,
           message: msg
         })
+      end
+
+      def starting_service
+        {
+          level: 'info',
+          tag: 'service.start',
+          msg: 'Starting dependent subscriber'
+        }
       end
 
       def starting_subscriber

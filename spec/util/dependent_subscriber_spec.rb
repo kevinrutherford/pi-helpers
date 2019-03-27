@@ -9,7 +9,7 @@ RSpec.describe Pi::Util::DependentSubscriber do
   let(:piggy) { double('Eventstore subscriber') }
   let(:options) {
     {
-      eventstore: piggy,
+      test_subscriber: piggy,
       upstream: {
         host: random_word,
         path: random_word,

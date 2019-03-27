@@ -4,6 +4,7 @@ env
 .mk-*
 *.pem
 .rspec
+spec/integration
 tags
 tmp/
 

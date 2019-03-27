@@ -14,6 +14,10 @@ module Pi
       def initialize(info, options, listener)
         @info = info
         @listener = listener
+        raise 'options[:url] is required' unless options[:url]
+        raise 'options[:username] is required' unless options[:username]
+        raise 'options[:password] is required' unless options[:password]
+        raise 'options[:reducer] is required' unless options[:reducer]
         url = options[:url]
         @info[:stats] = {
           startedAt: Time.now,
