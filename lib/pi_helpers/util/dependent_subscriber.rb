@@ -3,7 +3,6 @@
 # Proprietary and confidential.
 #
 
-require 'faraday'
 require_relative '../eventstore'
 
 module Pi
@@ -15,68 +14,80 @@ module Pi
         @listener = options[:listener]
         raise "options[:listener] is required" unless @listener
         @upstream = options[:upstream]
-        @subscriber = options[:subscriber] || Pi::Eventstore::Subscriber.new(options)
-        @waiting = true
+        @subscriber = options[:eventstore] || Pi::Eventstore::Subscriber.new(@info, options[:eventstore], @listener)
+        @info = {
+          status_code: 200,
+          message: 'OK',
+          state: nil,
+          stats: {}
+        }
       end
 
       def start
         wait_for(@upstream) if @upstream
-        @listener.call({
-          level: 'info',
-          tag: 'subscriber.start',
-          msg: 'Starting EventStore subscriber'
-        })
-        @waiting = false
-        @subscriber.subscribe
+        if @info[:status_code] == 200
+          @listener.call(starting_subscriber)
+          @subscriber.subscribe
+          @listener.call(subscriber_stopped)
+        else
+          @listener.call(not_starting_subscriber)
+        end
       end
 
       def info
-        {
-          status: @waiting ? 503 : @subscriber.status,                 # must be an integer HTTP status code
-          state: @subscriber.state
-        }
+        @info
       end
 
       private
 
-      def available
-        @subscriber.status[:available]
+      def wait_for(upstream)
+        @info[:status_code] = 503
+        @info[:message] = "Waiting for upstream #{@upstream[:host]} service"
+        sleep @options[:upstream][:grace_period]
+        upstream = Upstream.new(@options[:upstream], @info)
+        loop do
+          @info.merge! upstream.check
+          log_upstream_status
+          return unless @info[:status_code] == 503
+          sleep @options[:upstream][:interval]
+        end
       end
 
-      def wait_for(upstream)
-        host = upstream[:host]
+      def log_upstream_status
+        host = @options[:upstream][:host]
+        code = @info[:status_code]
+        msg = @info[:message]
         @listener.call({
           level: 'info',
-          tag: 'waitfor.upstream',
-          msg: "About to begin polling #{host}",
+          tag: 'upstream.status',
+          msg: "Upstream service #{host} status: #{code}",
           upstream: host,
-          subscriber: @subscriber.status
+          message: msg
         })
-        while true do
-          sleep 5
-          status = fetch(host, upstream[:path])
-          return unless status == 503
-          @listener.call({
-            level: 'info',
-            tag: 'upstream.notready',
-            msg: "Upstream service #{host} returned status #{status}",
-            upstream: host
-          })
-        end
       end
 
-      def fetch(host, path)
-        connection = Faraday.new(url: host) do |faraday|
-          faraday.request :retry, max: 4, interval: 0.05, interval_randomness: 0.5, backoff_factor: 2
-          faraday.adapter Faraday.default_adapter
-        end
-        response = connection.send(:get, path) do |req|
-          req.headers = {
-            'Accept'        => 'application/json',
-            'Content-Type'  => 'application/json',
-          }
-        end
-        response.status
+      def starting_subscriber
+        {
+          level: 'info',
+          tag: 'subscriber.start',
+          msg: 'Starting EventStore subscriber'
+        }
+      end
+
+      def not_starting_subscriber
+        {
+          level: 'error',
+          tag: 'subscriber.notstarted',
+          msg: "Not starting EventStore subscriber: #{@info[:message]}"
+        }
+      end
+
+      def subscriber_stopped
+        {
+          level: 'error',
+          tag: 'subscriber.stopped',
+          msg: "EventStore subscriber stopped: #{@info[:message]}"
+        }
       end
 
     end

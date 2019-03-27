@@ -10,12 +10,13 @@ module Pi
 
     class Stream
 
-      def Stream.open(name, connection, listener)
-        Stream.new("/streams/#{name}", connection, listener)
+      def Stream.open(name, connection, info, listener)
+        Stream.new("/streams/#{name}", connection, info, listener)
       end
 
-      def initialize(head_uri, connection, listener)
+      def initialize(head_uri, connection, info, listener)
         @connection = connection
+        @info = info
         @listener = listener
         @current_etag = nil
         fetch_first_page(head_uri)
@@ -38,41 +39,41 @@ module Pi
       private
 
       def fetch_first_page(uri)
-        back_off = 1
-        @listener.call({
-          level: 'info',
-          tag:   'fetchFirstPage.connecting',
-          msg:   "Connecting to #{uri} on #{@connection}"
-        })
-        loop do
-          begin
-            fetch(uri)
-            last = @current_page.first_event_uri
-            fetch(last) if last
-            @listener.call({
-              level: 'info',
-              tag:   'fetchFirstPage.connected',
-              msg:   "Connected to #{uri} on #{@connection}",
-              eventsWaiting: !@current_page.empty?
-            })
-            return
-          rescue Exception => ex
-            @listener.call({
-              level: 'error',
-              tag:   'fetchFirstPage.error',
-              msg:   "#{ex.class}: #{ex.message}. Retry in #{back_off}s."
-            })
-            sleep back_off
-            back_off *= 2
-          end
+        @listener.call(connecting(uri))
+        fetch(uri)
+        if @info[:status_code] == 200
+          last = @current_page.first_event_uri
+          fetch(last) if last
+          @listener.call(connected(uri))
         end
       end
 
       def fetch(uri)
         response = @connection.get(uri, @current_etag)
+        @info[:status_code] = response.status
         @current_page = Page.new(response.body)
         @current_uri = uri
         @current_etag = response.headers['etag']
+      rescue Exception => ex
+        @info[:status_code] = 502
+        @info[:message] = ex.message
+      end
+
+      def connecting(uri)
+        {
+          level: 'info',
+          tag:   'fetchFirstPage.connecting',
+          msg:   "Connecting to #{uri} on #{@connection}"
+        }
+      end
+
+      def connected(uri)
+        {
+          level: 'info',
+          tag:   'fetchFirstPage.connected',
+          msg:   "Connected to #{uri} on #{@connection}",
+          eventsWaiting: !@current_page.empty?
+        }
       end
 
     end

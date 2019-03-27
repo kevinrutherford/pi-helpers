@@ -9,7 +9,7 @@ RSpec.describe Pi::Util::DependentSubscriber do
   let(:piggy) { double('Eventstore subscriber') }
   let(:options) {
     {
-      subscriber: piggy,
+      eventstore: piggy,
       upstream: {},
       listener: double
     }
@@ -25,11 +25,11 @@ RSpec.describe Pi::Util::DependentSubscriber do
   context 'before subscribing has begun' do
 
     specify 'we are waiting to begin' do
-      expect(subject.info[:status]).to eq(503)
+      expect(subject.info[:status_code]).to eq(200)
     end
 
-    specify "the subscriber's state is passed on" do
-      expect(subject.info[:state]).to eq(state)
+    specify "the subscriber's state is not set" do
+      expect(subject.info[:state]).to eq(nil)
     end
   end
 

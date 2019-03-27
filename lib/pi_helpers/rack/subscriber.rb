@@ -31,7 +31,7 @@ module Pi
             }
           })
         end
-        code = info[:status]
+        code = info[:status_code]
         if code != 200
           return Pi::Rack.respond(code, {
             errors: [
