@@ -23,6 +23,14 @@ module Pi
 
       def call(env)
         info = @subscriber.info
+        if env['PATH_INFO'] == '/info'
+          return Pi::Rack.respond(200, {
+            data: {
+              type: 'ServiceStatus',
+              attributes: info
+            }
+          })
+        end
         code = info[:status]
         if code != 200
           return Pi::Rack.respond(code, {

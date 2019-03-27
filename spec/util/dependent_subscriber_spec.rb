@@ -33,5 +33,7 @@ RSpec.describe Pi::Util::DependentSubscriber do
     end
   end
 
+  context 'when the upstream service cannot be reached'
+
 end
 

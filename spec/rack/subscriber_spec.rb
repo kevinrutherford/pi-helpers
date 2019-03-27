@@ -53,7 +53,29 @@ RSpec.describe Pi::Rack::Subscriber do
     specify 'the app is not called' do
       expect(app).to_not be_called
     end
+  end
 
+  describe '/info' do
+    let(:subscriber_status) { random_int }
+    let(:env) {
+      {
+        'PATH_INFO' => '/info'
+      }
+    }
+
+    specify 'the request succeeds' do
+      expect(@response.status).to eq(200)
+    end
+
+    specify 'the subscriber status is returned' do
+      json = JSON.parse(@response.body[0], symbolize_names: true)
+      puts json.inspect
+      expect(json[:data][:attributes][:status]).to eq(subscriber_status)
+    end
+
+    specify 'the app is not called' do
+      expect(app).to_not be_called
+    end
   end
 
 end
