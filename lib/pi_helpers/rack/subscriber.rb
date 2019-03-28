@@ -23,27 +23,33 @@ module Pi
 
       def call(env)
         info = @subscriber.info
-        if env['PATH_INFO'] == '/info'
-          return Pi::Rack.respond(200, {
-            data: {
-              type: 'ServiceStatus',
-              attributes: info
-            }
-          })
-        end
         code = info[:status_code]
-        if code != 200
-          return Pi::Rack.respond(code, {
-            errors: [
-              {
-                status: code.to_s,
-                title: 'Eventstore subscriber not available'
-              }
-            ]
-          })
-        end
+        return not_available(code) if code != 200
+        return service_status(info) if env['PATH_INFO'] == '/info'
         env[READMODEL_KEY] = info
         @app.call(env)
+      end
+
+      private
+
+      def service_status(info)
+        Pi::Rack.respond(200, {
+          data: {
+            type: 'ServiceStatus',
+            attributes: info
+          }
+        })
+      end
+
+      def not_available(code)
+        Pi::Rack.respond(code, {
+          errors: [
+            {
+              status: code.to_s,
+              title: 'Eventstore subscriber not available'
+            }
+          ]
+        })
       end
 
     end

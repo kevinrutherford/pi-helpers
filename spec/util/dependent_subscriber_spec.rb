@@ -30,7 +30,7 @@ RSpec.describe Pi::Util::DependentSubscriber do
   context 'before subscribing has begun' do
 
     specify 'we are waiting to begin' do
-      expect(subject.info[:status_code]).to eq(200)
+      expect(subject.info[:status_code]).to eq(503)
     end
 
     specify "the subscriber's state is not set" do

@@ -55,7 +55,7 @@ RSpec.describe Pi::Rack::Subscriber do
   end
 
   describe '/info' do
-    let(:subscriber_status) { random_int }
+    let(:subscriber_status) { 200 }
     let(:env) {
       {
         'PATH_INFO' => '/info'
@@ -68,7 +68,7 @@ RSpec.describe Pi::Rack::Subscriber do
 
     specify 'the subscriber status is returned' do
       json = JSON.parse(@response.body[0], symbolize_names: true)
-      expect(json[:data][:attributes][:status_code]).to eq(subscriber_status)
+      expect(json[:data][:attributes][:status_code]).to eq(200)
     end
 
     specify 'the app is not called' do

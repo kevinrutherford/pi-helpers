@@ -22,7 +22,7 @@ module Pi
           raise 'upstream[:interval] is required' unless @upstream[:interval]
         end
         @info = {
-          status_code: 200,
+          status_code: 503,
           message: 'OK',
           state: nil,
           stats: {}
