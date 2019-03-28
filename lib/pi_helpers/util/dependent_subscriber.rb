@@ -32,14 +32,14 @@ module Pi
 
       def start
         @listener.call(starting_service)
-        wait_for(@upstream) if @upstream
-        if @info[:status_code] == 200
-          @listener.call(starting_subscriber)
-          @subscriber.subscribe
-          @listener.call(subscriber_stopped)
-        else
-          @listener.call(not_starting_subscriber)
+        if @upstream
+          wait_for(@upstream)
+          return @listener.call(not_starting_subscriber) unless @info[:status_code] == 200
         end
+        @listener.call(starting_subscriber)
+        @info[:status_code] = 200
+        @subscriber.subscribe
+        @listener.call(subscriber_stopped)
       end
 
       def info
