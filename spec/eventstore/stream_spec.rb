@@ -14,31 +14,6 @@ RSpec.describe Pi::Eventstore::Stream do
   subject { Pi::Eventstore::Stream.open(stream_name, connection, info, logger) }
   let(:base_etag) { random_word }
 
-  describe '#initialize' do
-
-    context 'when EventStore is not available' do
-      specify 'the stream retries at doubling intervals'
-    end
-
-    context 'when EventStore is available' do
-      context 'but fetching the first page of events fails' do
-        specify 'the stream retries at doubling intervals'
-      end
-
-      context 'and there are no waiting events' do
-        specify 'the stream sits on the current page'
-      end
-
-      context 'and there are 2 pages of events waiting' do
-        specify 'the stream fetches the head'
-      end
-
-    end
-  end
-
-  describe '#wait_for_new_events' do
-  end
-
   describe '#each_event' do
 
     context 'when the stream has more than one page of events' do
