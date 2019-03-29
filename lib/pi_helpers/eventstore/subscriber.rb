@@ -30,21 +30,36 @@ module Pi
 
       def subscribe
         @stream = Stream.open("$all", @connection, @info, @listener)
+        prevent_readmodel_access
+        @stream.wait_for_new_events
+        process_all
         loop do
-          @info[:status_code] = 200
+          allow_readmodel_access
           @stream.wait_for_new_events
-          @info[:status_code] = 503
-          num_events_processed = 0
-          @stream.each_event do |evt|
-            process(evt)
-            num_events_processed += 1
-          end
-          @info[:stats][:eventsReceived] = @info[:stats][:eventsReceived] + num_events_processed
-          @listener.call(caught_up num_events_processed)
+          prevent_readmodel_access
+          process_all
         end
       end
 
       private
+
+      def prevent_readmodel_access
+        @info[:status_code] = 503
+      end
+
+      def allow_readmodel_access
+        @info[:status_code] = 200
+      end
+
+      def process_all
+        num_events_processed = 0
+        @stream.each_event do |evt|
+          process(evt)
+          num_events_processed += 1
+        end
+        @info[:stats][:eventsReceived] = @info[:stats][:eventsReceived] + num_events_processed
+        @listener.call(caught_up num_events_processed)
+      end
 
       def process(evt)
         @info[:state] = @reducer.call(@info[:state], evt)
