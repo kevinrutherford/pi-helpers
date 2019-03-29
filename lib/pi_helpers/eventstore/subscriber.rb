@@ -29,8 +29,8 @@ module Pi
       end
 
       def subscribe
-        @stream = Stream.open("$all", @connection, @info, @listener)
         prevent_readmodel_access
+        @stream = Stream.open("$all", @connection, @info, @listener)
         @stream.wait_for_new_events
         process_all
         loop do
