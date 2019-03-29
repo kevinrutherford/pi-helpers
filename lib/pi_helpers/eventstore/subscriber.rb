@@ -31,6 +31,7 @@ module Pi
       def subscribe
         @stream = Stream.open("$all", @connection, @info, @listener)
         loop do
+          @info[:status_code] = 200
           @stream.wait_for_new_events
           @info[:status_code] = 503
           num_events_processed = 0

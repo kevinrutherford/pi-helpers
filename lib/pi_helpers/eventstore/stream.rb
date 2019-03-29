@@ -19,6 +19,7 @@ module Pi
         @info = info
         @listener = listener
         @current_etag = nil
+        @original_status_code = info[:status_code]
         fetch_first_page(head_uri)
       end
 
@@ -41,7 +42,7 @@ module Pi
       def fetch_first_page(uri)
         @listener.call(connecting(uri))
         fetch(uri)
-        if @info[:status_code] == 200
+        if @info[:status_code] == @original_status_code
           last = @current_page.first_event_uri
           fetch(last) if last
           @listener.call(connected(uri))
@@ -50,10 +51,14 @@ module Pi
 
       def fetch(uri)
         response = @connection.get(uri, @current_etag)
-        @info[:status_code] = response.status
-        @current_page = Page.new(response.body)
-        @current_uri = uri
-        @current_etag = response.headers['etag']
+        if response.status == 200
+          @current_page = Page.new(response.body)
+          @current_uri = uri
+          @current_etag = response.headers['etag']
+        else
+          @info[:status_code] = response.status
+          @info[:message] = response.body
+        end
       rescue Exception => ex
         @info[:status_code] = 502
         @info[:message] = ex.message
