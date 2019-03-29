@@ -20,7 +20,6 @@ module Pi
         @info = info
         @listener = listener
         @current_etag = nil
-        @original_status_code = info[:status_code]
         @retry_interval = 60
         fetch_first_page(head_uri)
       end
@@ -50,13 +49,14 @@ module Pi
       end
 
       def fetch(uri)
+        original_status_code = @info[:status_code]
         response = Fetcher.new(@connection).fetch(uri, @current_etag, on_error: ->(code, msg) {
           @info[:status_code] = code
           @info[:message] = msg
           @listener.call(fetch_failed(uri, code, msg))
           sleep @retry_interval
         })
-        @info[:status_code] = @original_status_code
+        @info[:status_code] = original_status_code
         @current_page = Page.new(response.body)
         @current_uri = uri
         @current_etag = response.headers['etag']
