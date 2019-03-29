@@ -4,6 +4,7 @@
 #
 
 require_relative './page'
+require_relative './fetcher'
 
 module Pi
   module Eventstore
@@ -20,6 +21,7 @@ module Pi
         @listener = listener
         @current_etag = nil
         @original_status_code = info[:status_code]
+        @retry_interval = 60
         fetch_first_page(head_uri)
       end
 
@@ -42,26 +44,22 @@ module Pi
       def fetch_first_page(uri)
         @listener.call(connecting(uri))
         fetch(uri)
-        if @info[:status_code] == @original_status_code
-          last = @current_page.first_event_uri
-          fetch(last) if last
-          @listener.call(connected(uri))
-        end
+        last = @current_page.first_event_uri
+        fetch(last) if last
+        @listener.call(connected(uri))
       end
 
       def fetch(uri)
-        response = @connection.get(uri, @current_etag)
-        if response.status == 200
-          @current_page = Page.new(response.body)
-          @current_uri = uri
-          @current_etag = response.headers['etag']
-        else
-          @info[:status_code] = response.status
-          @info[:message] = response.body
-        end
-      rescue Exception => ex
-        @info[:status_code] = 502
-        @info[:message] = ex.message
+        response = Fetcher.new(@connection).fetch(uri, @current_etag, on_error: ->(code, msg) {
+          @info[:status_code] = code
+          @info[:message] = msg
+          @listener.call(fetch_failed(uri, code, msg))
+          sleep @retry_interval
+        })
+        @info[:status_code] = @original_status_code
+        @current_page = Page.new(response.body)
+        @current_uri = uri
+        @current_etag = response.headers['etag']
       end
 
       def connecting(uri)
@@ -78,6 +76,17 @@ module Pi
           tag:   'fetchFirstPage.connected',
           msg:   "Connected to #{uri} on #{@connection}",
           eventsWaiting: !@current_page.empty?
+        }
+      end
+
+      def fetch_failed(uri, code, msg)
+        {
+          level: 'error',
+          tag: 'eventstore.error',
+          msg: "Failed to fetch from Eventstore. Retrying in #{@retry_interval}s",
+          uri: uri,
+          status_code: code,
+          error: msg
         }
       end
 

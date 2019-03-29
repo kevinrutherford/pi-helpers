@@ -5,8 +5,6 @@
 
 require 'pi_helpers/eventstore/stream'
 
-class FakeResponse < Struct.new(:status, :headers, :body); end
-
 RSpec.describe Pi::Eventstore::Stream do
   let(:logger) { double('Logger', call: true) }
   let(:connection) { double('Connection') }
