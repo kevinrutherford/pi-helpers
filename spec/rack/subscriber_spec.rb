@@ -23,7 +23,7 @@ RSpec.describe Pi::Rack::Subscriber do
   }
 
   before do
-    expect(piggy).to receive(:info).and_return({ status_code: subscriber_status })
+    expect(piggy).to receive(:info).and_return({ status_code: subscriber_status, state: {} })
     @response = subject.call(env)
   end
 
@@ -69,6 +69,11 @@ RSpec.describe Pi::Rack::Subscriber do
     specify 'the subscriber status is returned' do
       json = JSON.parse(@response.body[0], symbolize_names: true)
       expect(json[:data][:attributes][:status_code]).to eq(200)
+    end
+
+    specify 'the subscriber state is not returned' do
+      json = JSON.parse(@response.body[0], symbolize_names: true)
+      expect(json[:data][:attributes]).to_not have_key(:state)
     end
 
     specify 'the app is not called' do

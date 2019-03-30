@@ -36,7 +36,7 @@ module Pi
         Pi::Rack.respond(200, {
           data: {
             type: 'ServiceStatus',
-            attributes: info
+            attributes: info.reject {|k,v| k == :state }
           }
         })
       end
