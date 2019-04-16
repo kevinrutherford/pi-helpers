@@ -4,6 +4,7 @@
 #
 
 require 'rack'
+require_relative 'rack/check_for_claims'
 require_relative 'rack/configuration_error'
 require_relative 'rack/connect_to_eventstore'
 require_relative 'rack/json_response'

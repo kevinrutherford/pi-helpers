@@ -4,6 +4,7 @@
 #
 
 require_relative 'util/log_writer'
+require_relative 'util/principal'
 require_relative 'util/dependent_subscriber'
 
 module Pi
