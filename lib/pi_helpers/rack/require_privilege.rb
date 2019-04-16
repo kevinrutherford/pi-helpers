@@ -1,10 +1,8 @@
-# Copyright (C) 2019 Piford Software Limited - All Rights Reserved.
+# Copyright (c) Piford Software Limited - All Rights Reserved.
 # Unauthorized copying of this file, via any medium is strictly prohibited.
 # Proprietary and confidential.
 #
 
-require 'rack'
-require 'json'
 require_relative './configuration_error'
 require_relative './json_response'
 
@@ -15,15 +13,13 @@ module Pi
 
       def initialize(app, priv)
         @app = app
-        @priv = priv.to_s
+        @priv = priv
       end
 
       def call(env)
-        @request = ::Rack::Request.new(env)
-        claims = env[CLAIMS_KEY]
-        raise ConfigurationError, "Environment must contain unpacked claims" unless claims
-        return error(403, "Privilege #{@priv} required") unless claims.has_key?('privileges')
-        return error(403, "Privilege #{@priv} required") unless claims['privileges'].include?(@priv)
+        principal = env[PRINCIPAL_KEY]
+        raise ConfigurationError, "Environment must contain unpacked claims" unless principal
+        return error(403, "Privilege #{@priv} required") unless principal.can(@priv)
         @app.call(env)
       end
 

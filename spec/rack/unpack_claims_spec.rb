@@ -32,7 +32,7 @@ RSpec.describe Pi::Rack::UnpackClaims do
     end
 
     specify 'the claims are passed down to the app' do
-      expect(app.env_passed[Pi::Rack::CLAIMS_KEY]).to eq(claims)
+      expect(app.env_passed[Pi::Rack::PRINCIPAL_KEY]).to eq(claims)
     end
   end
 

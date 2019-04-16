@@ -20,7 +20,7 @@ module Pi
       def call(env)
         parse_result = Pi::Util::Claims.new(@key_file).parse(env)
         status = parse_result[0]
-        env[Pi::Rack::CLAIMS_KEY] = parse_result[1] if status == 200
+        env[Pi::Rack::PRINCIPAL_KEY] = parse_result[1] if status == 200
         @app.call(env)
       end
 

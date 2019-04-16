@@ -9,7 +9,7 @@ require_relative '../util/claims'
 module Pi
   module Rack
 
-    CLAIMS_KEY = 'pi.claims'
+    PRINCIPAL_KEY = 'pi.principal'
 
     class UnpackClaims
 
@@ -22,7 +22,7 @@ module Pi
         parse_result = Pi::Util::Claims.new(@key_file).parse(env)
         status = parse_result[0]
         if status == 200
-          env[CLAIMS_KEY] = parse_result[1]
+          env[PRINCIPAL_KEY] = parse_result[1]
           @app.call(env)
         else
           Pi::Rack.respond(status, {

@@ -29,7 +29,8 @@ module Pi
       end
 
       def can(priv)
-        @claims['privileges'].include?(priv.to_s)
+        privs = @claims['privileges'] || []
+        privs.include?(priv.to_s)
       end
 
     end

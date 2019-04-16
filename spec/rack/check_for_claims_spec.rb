@@ -32,7 +32,7 @@ RSpec.describe Pi::Rack::CheckForClaims do
     end
 
     specify 'the claims are passed down to the app' do
-      expect(app.env_passed[Pi::Rack::CLAIMS_KEY]).to eq(claims)
+      expect(app.env_passed[Pi::Rack::PRINCIPAL_KEY]).to eq(claims)
     end
   end
 
@@ -48,7 +48,7 @@ RSpec.describe Pi::Rack::CheckForClaims do
     end
 
     specify 'the claims are not passed down to the app' do
-      expect(app.env_passed).to_not have_key(Pi::Rack::CLAIMS_KEY)
+      expect(app.env_passed).to_not have_key(Pi::Rack::PRINCIPAL_KEY)
     end
   end
 
