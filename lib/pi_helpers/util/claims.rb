@@ -4,6 +4,7 @@
 #
 
 require 'jwt'
+require_relative './principal'
 
 module Pi
   module Util
@@ -23,7 +24,7 @@ module Pi
         bearer = m[1]
         begin
           claims = JWT.decode(bearer, @verify_key, true, { algorithm: 'RS256' })[0]
-          return [200, claims]
+          return [200, Pi::Util::Principal.new(claims)]
         rescue JWT::DecodeError => ex
           return [403, ex.message]
         end
