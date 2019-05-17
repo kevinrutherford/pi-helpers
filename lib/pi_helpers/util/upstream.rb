@@ -18,6 +18,7 @@ module Pi
       def check
         connection = Faraday.new(url: @host) do |faraday|
           faraday.request :retry, max: 4, interval: 0.05, interval_randomness: 0.5, backoff_factor: 2
+          faraday.response :json, content_type: 'application/json'
           faraday.adapter Faraday.default_adapter
         end
         response = connection.send(:get, @path) do |req|
@@ -26,7 +27,11 @@ module Pi
             'Content-Type'  => 'application/json',
           }
         end
-        { status_code: response.status }
+        if response.status == 200
+          { status_code: response.body['data']['attributes']['status_code'] }
+        else
+          { status_code: response.status }
+        end
       rescue Exception => ex
         {
           status_code: 502,

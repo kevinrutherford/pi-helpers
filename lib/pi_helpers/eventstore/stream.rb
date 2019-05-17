@@ -11,17 +11,8 @@ module Pi
 
     class Stream
 
-      def Stream.open(name, connection, info, listener)
-        Stream.new("/streams/#{name}", connection, info, listener)
-      end
-
-      def initialize(head_uri, connection, info, listener, retry_secs = 20)
-        @connection = connection
-        @info = info
-        @listener = listener
-        @current_etag = nil
-        @retry_interval = retry_secs
-        fetch_first_page(head_uri)
+      def Stream.open(name, connection, info, listener, retry_secs = 20)
+        Stream.new("/streams/#{name}", connection, info, listener, retry_secs)
       end
 
       def wait_for_new_events
@@ -39,6 +30,15 @@ module Pi
       end
 
       private
+
+      def initialize(head_uri, connection, info, listener, retry_secs)
+        @connection = connection
+        @info = info
+        @listener = listener
+        @current_etag = nil
+        @retry_interval = retry_secs
+        fetch_first_page(head_uri)
+      end
 
       def fetch_first_page(uri)
         @listener.call(connecting(uri))
