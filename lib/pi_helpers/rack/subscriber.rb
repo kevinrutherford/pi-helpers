@@ -23,9 +23,9 @@ module Pi
 
       def call(env)
         info = @subscriber.info
+        return service_status(info) if env['PATH_INFO'] == '/info'
         code = info[:status_code]
         return not_available(code) if code != 200
-        return service_status(info) if env['PATH_INFO'] == '/info'
         env[READMODEL_KEY] = info
         @app.call(env)
       end

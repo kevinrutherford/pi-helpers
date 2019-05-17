@@ -30,14 +30,40 @@ RSpec.describe Pi::Rack::Subscriber do
   context 'when the subscriber is okay' do
     let(:subscriber_status) { 200 }
 
-    specify 'the env is passed down to the app' do
-      expect(app).to be_called
-      expect(app.env_passed).to eq(env)
+    context 'and an application path is requested' do
+      let(:env) { { 'PATH_INFO' => '/nuttshells' } }
+
+      specify 'the env is passed down to the app' do
+        expect(app).to be_called
+        expect(app.env_passed).to eq(env)
+      end
+
+      specify 'the app response is returned upwards' do
+        json = JSON.parse(@response.body[0])
+        expect(json).to eq(app.response)
+      end
     end
 
-    specify 'the app response is returned upwards' do
-      json = JSON.parse(@response.body[0])
-      expect(json).to eq(app.response)
+    context 'and /info is requested' do
+      let(:env) { { 'PATH_INFO' => '/info' } }
+
+      specify 'the request succeeds' do
+        expect(@response.status).to eq(200)
+      end
+
+      specify 'the subscriber status is returned' do
+        json = JSON.parse(@response.body[0], symbolize_names: true)
+        expect(json[:data][:attributes][:status_code]).to eq(200)
+      end
+
+      specify 'the subscriber state is not returned' do
+        json = JSON.parse(@response.body[0], symbolize_names: true)
+        expect(json[:data][:attributes]).to_not have_key(:state)
+      end
+
+      specify 'the app is not called' do
+        expect(app).to_not be_called
+      end
     end
 
   end
@@ -45,39 +71,38 @@ RSpec.describe Pi::Rack::Subscriber do
   context 'when the subscriber is reporting a problem' do
     let(:subscriber_status) { 502 }
 
-    specify 'the subscriber status is returned' do
-      expect(@response.status).to eq(subscriber_status)
+    context 'and an application path is requested' do
+      let(:env) { { 'PATH_INFO' => '/nuttshells' } }
+
+      specify 'the subscriber status is returned' do
+        expect(@response.status).to eq(subscriber_status)
+      end
+
+      specify 'the app is not called' do
+        expect(app).to_not be_called
+      end
     end
 
-    specify 'the app is not called' do
-      expect(app).to_not be_called
-    end
-  end
+    context 'and /info is requested' do
+      let(:env) { { 'PATH_INFO' => '/info' } }
 
-  describe '/info' do
-    let(:subscriber_status) { 200 }
-    let(:env) {
-      {
-        'PATH_INFO' => '/info'
-      }
-    }
+      specify 'the request succeeds' do
+        expect(@response.status).to eq(200)
+      end
 
-    specify 'the request succeeds' do
-      expect(@response.status).to eq(200)
-    end
+      specify 'the subscriber status is returned' do
+        json = JSON.parse(@response.body[0], symbolize_names: true)
+        expect(json[:data][:attributes][:status_code]).to eq(subscriber_status)
+      end
 
-    specify 'the subscriber status is returned' do
-      json = JSON.parse(@response.body[0], symbolize_names: true)
-      expect(json[:data][:attributes][:status_code]).to eq(200)
-    end
+      specify 'the subscriber state is not returned' do
+        json = JSON.parse(@response.body[0], symbolize_names: true)
+        expect(json[:data][:attributes]).to_not have_key(:state)
+      end
 
-    specify 'the subscriber state is not returned' do
-      json = JSON.parse(@response.body[0], symbolize_names: true)
-      expect(json[:data][:attributes]).to_not have_key(:state)
-    end
-
-    specify 'the app is not called' do
-      expect(app).to_not be_called
+      specify 'the app is not called' do
+        expect(app).to_not be_called
+      end
     end
   end
 
