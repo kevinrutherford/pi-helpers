@@ -86,16 +86,19 @@ RSpec.describe Pi::Util::DependentSubscriber do
       let(:upstream_responses) { [
         { status_code: 503, message: "I'm busy" },
         { status_code: 503, message: "I'm busy" },
-        { status_code: 502, message: "I'm dead" }
+        { status_code: 502, message: "I'm dead" },
+        { status_code: 503, message: "I'm busy" },
+        { status_code: 503, message: "I'm busy" },
+        { status_code: 200, message: "OK" }
       ] }
 
       specify 'the subscriber is not started' do
-        expect(es_subscriber).to_not have_received(:subscribe)
+        expect(es_subscriber).to have_received(:subscribe)
       end
 
       specify 'our status shows the problem' do
-        expect(subject.info[:status_code]).to eq(502)
-        expect(subject.info[:message]).to eq("I'm dead")
+        expect(subject.info[:status_code]).to eq(200)
+        expect(subject.info[:message]).to eq("OK")
       end
     end
 

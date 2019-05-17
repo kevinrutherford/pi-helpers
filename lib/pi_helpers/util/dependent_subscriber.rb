@@ -56,7 +56,7 @@ module Pi
         loop do
           @info.merge! upstream.check
           log_upstream_status
-          return unless @info[:status_code] == 503
+          return unless [502, 503].include? @info[:status_code]
           sleep @upstream[:interval]
         end
       end
