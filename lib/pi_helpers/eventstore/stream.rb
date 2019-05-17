@@ -15,12 +15,12 @@ module Pi
         Stream.new("/streams/#{name}", connection, info, listener)
       end
 
-      def initialize(head_uri, connection, info, listener)
+      def initialize(head_uri, connection, info, listener, retry_secs = 20)
         @connection = connection
         @info = info
         @listener = listener
         @current_etag = nil
-        @retry_interval = 60
+        @retry_interval = retry_secs
         fetch_first_page(head_uri)
       end
 
