@@ -10,12 +10,14 @@ module Pi
 
     class Page
 
-      def initialize(body)
+      def initialize(body, page_size)
         @body = body
+        @page_size = page_size
       end
 
       def first_event_uri
-        find_link('last')
+        uri = find_link('last')
+        uri.nil? ? nil : uri.gsub(/\/20$/, "/#{@page_size}")
       end
 
       def newer_events_uri

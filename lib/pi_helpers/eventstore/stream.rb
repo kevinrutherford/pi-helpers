@@ -11,8 +11,8 @@ module Pi
 
     class Stream
 
-      def Stream.open(name, connection, info, listener, retry_secs = 20)
-        Stream.new("/streams/#{name}", connection, info, listener, retry_secs)
+      def Stream.open(name, connection, info, listener, retry_secs, page_size)
+        Stream.new("/streams/#{name}", connection, info, listener, retry_secs, page_size)
       end
 
       def wait_for_new_events
@@ -31,11 +31,12 @@ module Pi
 
       private
 
-      def initialize(head_uri, connection, info, listener, retry_secs)
+      def initialize(head_uri, connection, info, listener, retry_secs, page_size)
         @connection = connection
         @info = info
         @listener = listener
         @current_etag = nil
+        @page_size = page_size
         @retry_interval = retry_secs
         fetch_first_page(head_uri)
       end
@@ -57,7 +58,7 @@ module Pi
           sleep @retry_interval
         })
         @info[:status_code] = original_status_code
-        @current_page = Page.new(response.body)
+        @current_page = Page.new(response.body, @page_size)
         @current_uri = uri
         @current_etag = response.headers['etag']
       end

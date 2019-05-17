@@ -26,12 +26,13 @@ module Pi
         }
         @connection = Connection.new(url, options[:username], options[:password])
         @reducer = options[:reducer]
-        @retry_secs = options[:retry_secs]
+        @retry_secs = options[:retry_secs] || 20
+        @page_size = options[:page_size] || 200
       end
 
       def subscribe
         prevent_readmodel_access
-        @stream = Stream.open("$all", @connection, @info, @listener, @retry_secs)
+        @stream = Stream.open("$all", @connection, @info, @listener, @retry_secs, @page_size)
         @stream.wait_for_new_events
         process_all
         loop do

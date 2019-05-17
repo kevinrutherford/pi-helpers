@@ -11,7 +11,7 @@ RSpec.describe Pi::Eventstore::Stream do
   let(:stream_name) { random_word }
   let(:initial_status_code) { random_int }
   let(:info) { { status_code: initial_status_code } }
-  subject { Pi::Eventstore::Stream.open(stream_name, connection, info, logger) }
+  subject { Pi::Eventstore::Stream.open(stream_name, connection, info, logger, 20, 200) }
   let(:base_etag) { random_word }
 
   describe '#each_event' do
